@@ -8,9 +8,14 @@ public class Transicion {
     private Estado estadoDestinoAFD;
     private List<Estado> estadoDestinoAFN;
 
-    public Transicion(Estado estadoDestinoAFD, List<Estado> estadoDestinoAFN, Estado estadoOrigen, String simbolo) {
-        this.estadoDestinoAFD = estadoDestinoAFD;
+    public Transicion(Estado estadoOrigen, List<Estado> estadoDestinoAFN,  String simbolo) {
         this.estadoDestinoAFN = estadoDestinoAFN;
+        this.estadoOrigen = estadoOrigen;
+        this.simbolo = simbolo;
+    }
+
+    public Transicion(Estado estadoOrigen, Estado estadoDestinoAFD, String simbolo) {
+        this.estadoDestinoAFD = estadoDestinoAFD;
         this.estadoOrigen = estadoOrigen;
         this.simbolo = simbolo;
     }
