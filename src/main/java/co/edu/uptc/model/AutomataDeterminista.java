@@ -17,4 +17,13 @@ public class AutomataDeterminista extends Automata {
     public void setEstadoAceptacion(Estado estadoAceptacion) {
         this.estadoAceptacion = estadoAceptacion;
     }
+
+    public Estado validarSimbolo(Estado estadoActual, String simbolo){
+        for (Transicion transicionActual: this.getFuncionTransicion()){
+            if (transicionActual.getSimbolo().equals(simbolo) && transicionActual.getEstadoOrigen().equals(estadoActual)){
+                return transicionActual.getEstadoDestinoAFD();
+            }
+        }
+        return null;
+    }
 }
