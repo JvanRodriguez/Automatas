@@ -17,4 +17,8 @@ public class AutomataNoDeterminista extends Automata {
     public void setEstadosAceptacion(List<Estado> estadosAceptacion) {
         this.estadosAceptacion = estadosAceptacion;
     }
+
+    public List<Estado> validarSimbolo(String simbolo){
+        return null;
+    }
 }
