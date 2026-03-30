@@ -1,5 +1,6 @@
 package co.edu.uptc.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AutomataNoDeterminista extends Automata {
@@ -18,7 +19,15 @@ public class AutomataNoDeterminista extends Automata {
         this.estadosAceptacion = estadosAceptacion;
     }
 
-    public List<Estado> validarSimbolo(String simbolo){
-        return null;
+    public List<Estado> validarSimbolo(List<Estado> estadosActuales, String simbolo) {
+        List<Estado> estadosSiguientes = new ArrayList<>();
+
+        for (Transicion transicion : this.getFuncionTransicion()) {
+            if (estadosActuales.contains(transicion.getEstadoOrigen())
+                    && transicion.getSimbolo().equals(simbolo)) {
+                estadosSiguientes.addAll(transicion.getEstadoDestinoAFN());
+            }
+        }
+        return estadosSiguientes;
     }
 }
