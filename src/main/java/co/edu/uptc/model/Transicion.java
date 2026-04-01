@@ -1,39 +1,32 @@
 package co.edu.uptc.model;
 
+import co.edu.uptc.DTO.DTOs;
+
 import java.util.List;
 
 public class Transicion {
     private Estado estadoOrigen;
     private String simbolo;
-    private Estado estadoDestinoAFD;
-    private List<Estado> estadoDestinoAFN;
+    private List<Estado> estadoDestino;
 
-    public Transicion(Estado estadoOrigen, List<Estado> estadoDestinoAFN,  String simbolo) {
-        this.estadoDestinoAFN = estadoDestinoAFN;
+    public Transicion(Estado estadoOrigen, String Simbolo){
         this.estadoOrigen = estadoOrigen;
         this.simbolo = simbolo;
     }
 
-    public Transicion(Estado estadoOrigen, Estado estadoDestinoAFD, String simbolo) {
-        this.estadoDestinoAFD = estadoDestinoAFD;
-        this.estadoOrigen = estadoOrigen;
-        this.simbolo = simbolo;
+    public DTOs.TransicionDTO toDTO() {
+        List<String> nombreDestinos = this.estadoDestino.stream()
+                .map(Estado::getNombre)
+                .toList();
+        return new DTOs.TransicionDTO(this.estadoOrigen.getNombre(), this.simbolo, nombreDestinos);
     }
 
-    public Estado getEstadoDestinoAFD() {
-        return estadoDestinoAFD;
+    public List<Estado> getEstadoDestino() {
+        return estadoDestino;
     }
 
-    public void setEstadoDestinoAFD(Estado estadoDestinoAFD) {
-        this.estadoDestinoAFD = estadoDestinoAFD;
-    }
-
-    public List<Estado> getEstadoDestinoAFN() {
-        return estadoDestinoAFN;
-    }
-
-    public void setEstadoDestinoAFN(List<Estado> estadoDestinoAFN) {
-        this.estadoDestinoAFN = estadoDestinoAFN;
+    public void setEstadoDestino(List<Estado> estadoDestino) {
+        this.estadoDestino = estadoDestino;
     }
 
     public Estado getEstadoOrigen() {
