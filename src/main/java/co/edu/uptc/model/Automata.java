@@ -73,7 +73,7 @@ public class Automata {
         for (Transicion transicion : this.getFuncionTransicion()) {
             if (estadosActuales.contains(transicion.getEstadoOrigen())
                     && transicion.getSimbolo().equals(simbolo)) {
-                estadosSiguientes.addAll(transicion.getEstadoDestinoAFN());
+                estadosSiguientes.addAll(transicion.getEstadoDestino());
             }
         }
         return estadosSiguientes;
@@ -82,7 +82,7 @@ public class Automata {
     public Estado validarSimbolo(Estado estadoActual, String simbolo){
         for (Transicion transicionActual: this.getFuncionTransicion()){
             if (transicionActual.getSimbolo().equals(simbolo) && transicionActual.getEstadoOrigen().equals(estadoActual)){
-                return transicionActual.getEstadoDestinoAFD();
+                return transicionActual.getEstadoDestino().getFirst();
             }
         }
         return null;
