@@ -1,4 +1,4 @@
-package co.edu.uptc.model;
+package co.edu.uptc.formales.automatas.model;
 
 public class Estado {
     private TipoEstado tipo;
