@@ -35,12 +35,15 @@ public class Simulacion implements IModel{
     public HashMap<String, Boolean> evaluarCadenasPrueba(List<String> cadenas) {
         HashMap<String, Boolean> resultadoEvaluacion = new HashMap<>();
         Estado estadoActual = automataDeseado.getEstadoInicial();
+        List<Estado> estadosActuales = new ArrayList<>();
         List<Estado> estadosAceptacion = automataDeseado.getEstadosAceptacion();
         for (String cadena : cadenas) {
             for (int index = 0; index < cadena.length() ; index++) {
                 String simbolo = String.valueOf(cadena.charAt(index));
                 if(automataDeseado.getTipo().equals(TipoAutomata.AFD)){
-                    automataDeseado.validarSimbolo(estadoActual, simbolo);
+                    estadoActual = automataDeseado.validarSimbolo(estadoActual, simbolo);
+                }else{
+                    estadosActuales = automataDeseado.validarSimbolo(estadosActuales, simbolo);
                 }
             }
             if (estadosAceptacion.contains(estadoActual)) {
@@ -54,8 +57,24 @@ public class Simulacion implements IModel{
 
     @Override
     public String obtenerTrazabilidad(String cadena) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'obtenerTrazabilidad'");
+        String trazabilidad = "";
+        Estado estadoActual = automataDeseado.getEstadoInicial();
+        List<Estado> estadosActuales = new ArrayList<>();
+        for (int i = 0; i < cadena.length(); i++) {
+            String simbolo = String.valueOf(cadena.charAt(i));
+            if(automataDeseado.getTipo().equals(TipoAutomata.AFD)){
+                estadoActual = automataDeseado.validarSimbolo(estadoActual, simbolo);
+                trazabilidad += estadoActual.getNombre() + "->";
+            }else{
+                estadosActuales = automataDeseado.validarSimbolo(estadosActuales, simbolo);
+                trazabilidad += "(";
+                for (Estado estado : estadosActuales) {
+                    trazabilidad += estado.getNombre();
+                }
+                trazabilidad += ") ->";
+            }
+        }
+        return trazabilidad;
     }
 
     //Metodo que completa la transicion con los objetos TransicionDTO
