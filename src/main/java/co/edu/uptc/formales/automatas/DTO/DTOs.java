@@ -1,4 +1,4 @@
-package co.edu.uptc.DTO;
+package co.edu.uptc.formales.automatas.DTO;
 
 import java.util.List;
 

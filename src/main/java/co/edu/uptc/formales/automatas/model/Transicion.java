@@ -1,8 +1,8 @@
-package co.edu.uptc.model;
-
-import co.edu.uptc.DTO.DTOs;
+package co.edu.uptc.formales.automatas.model;
 
 import java.util.List;
+
+import co.edu.uptc.formales.automatas.DTO.DTOs;
 
 public class Transicion {
     private Estado estadoOrigen;
