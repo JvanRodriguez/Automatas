@@ -6,7 +6,7 @@ import java.util.List;
 
 import co.edu.uptc.formales.automatas.DTO.DTOs;
 
-public class Simulacion implements  IModel{
+public class Simulacion implements IModel{
 
     private Automata automataDeseado;
     private Estado estadoFinalCadenaActual;
@@ -15,20 +15,47 @@ public class Simulacion implements  IModel{
 
     @Override
     public void crearAutomata(List<Estado> estados, List<String> alfabeto, Estado inicial, List<Estado> aceptacion, TipoAutomata tipo) {
-
+        this.automataDeseado = new Automata(tipo, alfabeto, inicial, estados, aceptacion);
+        crearFuncionTransicionBase(estados, alfabeto);
     }
 
     @Override
-    public boolean agregarFuncionTransicion(List<Transicion> transiciones) {
-        return false;
+    public void crearFuncionTransicionBase(List<Estado> estados, List<String> alfabeto) {
+        List<Transicion> transicionesBase = new ArrayList<Transicion>();
+        for (int i = 0; i < estados.size(); i++) {
+            for (int j = 0; j < alfabeto.size(); j++) {
+                Transicion transicionActual = new Transicion(estados.get(i), alfabeto.get(j));
+                transicionesBase.add(transicionActual);
+            }
+        }
+        this.automataDeseado.setFuncionTransicion(transicionesBase);
     }
 
-    public void validarCadenas(List<String> cadenas){
-
+    @Override
+    public HashMap<String, Boolean> evaluarCadenasPrueba(List<String> cadenas) {
+        HashMap<String, Boolean> resultadoEvaluacion = new HashMap<>();
+        Estado estadoActual = automataDeseado.getEstadoInicial();
+        List<Estado> estadosAceptacion = automataDeseado.getEstadosAceptacion();
+        for (String cadena : cadenas) {
+            for (int index = 0; index < cadena.length() ; index++) {
+                String simbolo = String.valueOf(cadena.charAt(index));
+                if(automataDeseado.getTipo().equals(TipoAutomata.AFD)){
+                    automataDeseado.validarSimbolo(estadoActual, simbolo);
+                }
+            }
+            if (estadosAceptacion.contains(estadoActual)) {
+                resultadoEvaluacion.put(cadena, true);
+            } else {
+                resultadoEvaluacion.put(cadena, false);
+            }
+        }
+        return resultadoEvaluacion;
     }
 
-    public String validarRutaCadena(String cadena){
-        return null;
+    @Override
+    public String obtenerTrazabilidad(String cadena) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'obtenerTrazabilidad'");
     }
 
     //Metodo que completa la transicion con los objetos TransicionDTO
