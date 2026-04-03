@@ -2,13 +2,12 @@ package co.edu.uptc.formales.automatas.presenter;
 
 public interface IPresenter {
     public void crearAutomata();
-    public void guardarEstados();
-    public void guardarAlfabeto();
-    public void seleccionarEstadoInicial();
-    public void seleccionarEstadosAceptacion();
+    //Pregunta una por una cada transicion
     public void crearFuncionTransicion();
+    //pregunta por todos los destinos de todas las transiciones
+    public void crearFuncionTransicionAll();
     public void exportarAutomata();
     public void importarAutomata();
     public void evaluarCadenas();
-    public String ObtenerTrazabilidad(String cadena);
+    public void ObtenerTrazabilidad();
 }
