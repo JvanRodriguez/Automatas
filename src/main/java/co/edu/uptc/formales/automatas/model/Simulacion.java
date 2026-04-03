@@ -38,7 +38,6 @@ public class Simulacion implements IModel{
         
         for (String cadena : cadenas) {
             boolean aceptada = false;
-            
             if (automataDeseado.getTipo().equals(TipoAutomata.AFD)) {
                 Estado estadoActual = estadoInicial;
                 for (int index = 0; index < cadena.length(); index++) {

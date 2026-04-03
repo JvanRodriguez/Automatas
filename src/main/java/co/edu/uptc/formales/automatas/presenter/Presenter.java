@@ -4,6 +4,7 @@ import co.edu.uptc.formales.automatas.DTO.DTOs;
 import co.edu.uptc.formales.automatas.model.Simulacion;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Presenter implements IPresenter{
@@ -57,7 +58,7 @@ public class Presenter implements IPresenter{
         }
 
     }
-    
+
     public void crearFuncionTransicion() {
         //obtener estados de transiciones base como strings para la vista
         List<String> estados = simulacion.getTransicionesBase().stream().
@@ -98,8 +99,11 @@ public class Presenter implements IPresenter{
 
     @Override
     public void evaluarCadenas() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'evaluarCadenas'");
+        //metodo en vista que pide ingresar cadena
+        //Metodo para obtener cadena/s ingresadas
+        Map<String,Boolean> resultados = simulacion.evaluarCadenasPrueba(view.getCadenasPruebas());
+        view.mostrarResultadosPrueba(resultados);
+
     }
 
     @Override
