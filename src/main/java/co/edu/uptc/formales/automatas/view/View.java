@@ -1,0 +1,5 @@
+package co.edu.uptc.formales.automatas.view;
+
+public class View {
+    
+}
