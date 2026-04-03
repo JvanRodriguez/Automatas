@@ -9,8 +9,7 @@ import co.edu.uptc.formales.automatas.DTO.DTOs;
 public class Simulacion implements IModel{
 
     private Automata automataDeseado;
-    private Estado estadoFinalCadenaActual;
-    private HashMap<String, Boolean> map;
+    //private HashMap<String, Boolean> map;
 
 
     @Override
@@ -34,23 +33,41 @@ public class Simulacion implements IModel{
     @Override
     public HashMap<String, Boolean> evaluarCadenasPrueba(List<String> cadenas) {
         HashMap<String, Boolean> resultadoEvaluacion = new HashMap<>();
-        Estado estadoActual = automataDeseado.getEstadoInicial();
-        List<Estado> estadosActuales = new ArrayList<>();
+        Estado estadoInicial = automataDeseado.getEstadoInicial();
         List<Estado> estadosAceptacion = automataDeseado.getEstadosAceptacion();
+        
         for (String cadena : cadenas) {
-            for (int index = 0; index < cadena.length() ; index++) {
-                String simbolo = String.valueOf(cadena.charAt(index));
-                if(automataDeseado.getTipo().equals(TipoAutomata.AFD)){
+            boolean aceptada = false;
+            
+            if (automataDeseado.getTipo().equals(TipoAutomata.AFD)) {
+                Estado estadoActual = estadoInicial;
+                for (int index = 0; index < cadena.length(); index++) {
+                    String simbolo = String.valueOf(cadena.charAt(index));
                     estadoActual = automataDeseado.validarSimbolo(estadoActual, simbolo);
-                }else{
+                    if (estadoActual == null) break;
+                }
+                aceptada = (estadoActual != null && estadosAceptacion.contains(estadoActual));
+                
+            } else { // AFN
+                List<Estado> estadosActuales = new ArrayList<>();
+                estadosActuales.add(estadoInicial);
+                
+                for (int index = 0; index < cadena.length(); index++) {
+                    String simbolo = String.valueOf(cadena.charAt(index));
                     estadosActuales = automataDeseado.validarSimbolo(estadosActuales, simbolo);
+                    if (estadosActuales == null || estadosActuales.isEmpty()) break;
+                }
+                
+                if (estadosActuales != null) {
+                    for (Estado estado : estadosActuales) {
+                        if (estadosAceptacion.contains(estado)) {
+                            aceptada = true;
+                            break;
+                        }
+                    }
                 }
             }
-            if (estadosAceptacion.contains(estadoActual)) {
-                resultadoEvaluacion.put(cadena, true);
-            } else {
-                resultadoEvaluacion.put(cadena, false);
-            }
+            resultadoEvaluacion.put(cadena, aceptada);
         }
         return resultadoEvaluacion;
     }
@@ -58,20 +75,27 @@ public class Simulacion implements IModel{
     @Override
     public String obtenerTrazabilidad(String cadena) {
         String trazabilidad = "";
-        Estado estadoActual = automataDeseado.getEstadoInicial();
-        List<Estado> estadosActuales = new ArrayList<>();
-        for (int i = 0; i < cadena.length(); i++) {
-            String simbolo = String.valueOf(cadena.charAt(i));
-            if(automataDeseado.getTipo().equals(TipoAutomata.AFD)){
+        
+        if (automataDeseado.getTipo().equals(TipoAutomata.AFD)) {
+            Estado estadoActual = automataDeseado.getEstadoInicial();
+            trazabilidad = estadoActual.getNombre();
+            for (int i = 0; i < cadena.length(); i++) {
+                String simbolo = String.valueOf(cadena.charAt(i));
                 estadoActual = automataDeseado.validarSimbolo(estadoActual, simbolo);
-                trazabilidad += estadoActual.getNombre() + "->";
-            }else{
+                if (estadoActual == null) return "No válida";
+                trazabilidad += " -" + simbolo + "-> " + estadoActual.getNombre();
+            }
+        } else { // AFN
+            List<Estado> estadosActuales = new ArrayList<>();
+            estadosActuales.add(automataDeseado.getEstadoInicial());
+            trazabilidad += "{" + estadosActuales.get(0).getNombre() + "}";
+            
+            for (int i = 0; i < cadena.length(); i++) {
+                String simbolo = String.valueOf(cadena.charAt(i));
                 estadosActuales = automataDeseado.validarSimbolo(estadosActuales, simbolo);
-                trazabilidad += "(";
-                for (Estado estado : estadosActuales) {
-                    trazabilidad += estado.getNombre();
-                }
-                trazabilidad += ") ->";
+                if (estadosActuales.isEmpty()) return "No válida";
+                trazabilidad += " -" + simbolo + "-> {" + 
+                    estadosActuales.stream().map(Estado::getNombre).reduce((a,b) -> a + "," + b).orElse("") + "}";
             }
         }
         return trazabilidad;
