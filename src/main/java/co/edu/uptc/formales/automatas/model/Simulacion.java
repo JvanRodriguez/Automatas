@@ -6,29 +6,99 @@ import java.util.List;
 
 import co.edu.uptc.formales.automatas.DTO.DTOs;
 
-public class Simulacion implements  IModel{
+public class Simulacion implements IModel{
 
     private Automata automataDeseado;
-    private Estado estadoFinalCadenaActual;
-    private HashMap<String, Boolean> map;
+    //private HashMap<String, Boolean> map;
 
 
     @Override
     public void crearAutomata(List<Estado> estados, List<String> alfabeto, Estado inicial, List<Estado> aceptacion, TipoAutomata tipo) {
-
+        this.automataDeseado = new Automata(tipo, alfabeto, inicial, estados, aceptacion);
+        crearFuncionTransicionBase(estados, alfabeto);
     }
 
     @Override
-    public boolean agregarFuncionTransicion(List<Transicion> transiciones) {
-        return false;
+    public void crearFuncionTransicionBase(List<Estado> estados, List<String> alfabeto) {
+        List<Transicion> transicionesBase = new ArrayList<Transicion>();
+        for (int i = 0; i < estados.size(); i++) {
+            for (int j = 0; j < alfabeto.size(); j++) {
+                Transicion transicionActual = new Transicion(estados.get(i), alfabeto.get(j));
+                transicionesBase.add(transicionActual);
+            }
+        }
+        this.automataDeseado.setFuncionTransicion(transicionesBase);
     }
 
-    public void validarCadenas(List<String> cadenas){
-
+    @Override
+    public HashMap<String, Boolean> evaluarCadenasPrueba(List<String> cadenas) {
+        HashMap<String, Boolean> resultadoEvaluacion = new HashMap<>();
+        Estado estadoInicial = automataDeseado.getEstadoInicial();
+        List<Estado> estadosAceptacion = automataDeseado.getEstadosAceptacion();
+        
+        for (String cadena : cadenas) {
+            boolean aceptada = false;
+            
+            if (automataDeseado.getTipo().equals(TipoAutomata.AFD)) {
+                Estado estadoActual = estadoInicial;
+                for (int index = 0; index < cadena.length(); index++) {
+                    String simbolo = String.valueOf(cadena.charAt(index));
+                    estadoActual = automataDeseado.validarSimbolo(estadoActual, simbolo);
+                    if (estadoActual == null) break;
+                }
+                aceptada = (estadoActual != null && estadosAceptacion.contains(estadoActual));
+                
+            } else { // AFN
+                List<Estado> estadosActuales = new ArrayList<>();
+                estadosActuales.add(estadoInicial);
+                
+                for (int index = 0; index < cadena.length(); index++) {
+                    String simbolo = String.valueOf(cadena.charAt(index));
+                    estadosActuales = automataDeseado.validarSimbolo(estadosActuales, simbolo);
+                    if (estadosActuales == null || estadosActuales.isEmpty()) break;
+                }
+                
+                if (estadosActuales != null) {
+                    for (Estado estado : estadosActuales) {
+                        if (estadosAceptacion.contains(estado)) {
+                            aceptada = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            resultadoEvaluacion.put(cadena, aceptada);
+        }
+        return resultadoEvaluacion;
     }
 
-    public String validarRutaCadena(String cadena){
-        return null;
+    @Override
+    public String obtenerTrazabilidad(String cadena) {
+        String trazabilidad = "";
+        
+        if (automataDeseado.getTipo().equals(TipoAutomata.AFD)) {
+            Estado estadoActual = automataDeseado.getEstadoInicial();
+            trazabilidad = estadoActual.getNombre();
+            for (int i = 0; i < cadena.length(); i++) {
+                String simbolo = String.valueOf(cadena.charAt(i));
+                estadoActual = automataDeseado.validarSimbolo(estadoActual, simbolo);
+                if (estadoActual == null) return "No válida";
+                trazabilidad += " -" + simbolo + "-> " + estadoActual.getNombre();
+            }
+        } else { // AFN
+            List<Estado> estadosActuales = new ArrayList<>();
+            estadosActuales.add(automataDeseado.getEstadoInicial());
+            trazabilidad += "{" + estadosActuales.get(0).getNombre() + "}";
+            
+            for (int i = 0; i < cadena.length(); i++) {
+                String simbolo = String.valueOf(cadena.charAt(i));
+                estadosActuales = automataDeseado.validarSimbolo(estadosActuales, simbolo);
+                if (estadosActuales.isEmpty()) return "No válida";
+                trazabilidad += " -" + simbolo + "-> {" + 
+                    estadosActuales.stream().map(Estado::getNombre).reduce((a,b) -> a + "," + b).orElse("") + "}";
+            }
+        }
+        return trazabilidad;
     }
 
     //Metodo que completa la transicion con los objetos TransicionDTO

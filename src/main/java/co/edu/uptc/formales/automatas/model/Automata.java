@@ -68,20 +68,24 @@ public class Automata {
     }
 
     public List<Estado> validarSimbolo(List<Estado> estadosActuales, String simbolo) {
-        List<Estado> estadosSiguientes = new ArrayList<>();
-
-        for (Transicion transicion : this.getFuncionTransicion()) {
-            if (estadosActuales.contains(transicion.getEstadoOrigen())
-                    && transicion.getSimbolo().equals(simbolo)) {
-                estadosSiguientes.addAll(transicion.getEstadoDestino());
+        List<Estado> nuevosEstados = new ArrayList<>();
+        for (Estado estadoActual : estadosActuales) {
+            for (Transicion transicion : this.getFuncionTransicion()) {
+                String simb = transicion.getSimbolo();
+                if (simb != null && simb.equals(simbolo) 
+                        && transicion.getEstadoOrigen().equals(estadoActual)) {
+                    nuevosEstados.addAll(transicion.getEstadoDestino());
+                }
             }
         }
-        return estadosSiguientes;
+        return nuevosEstados;
     }
 
     public Estado validarSimbolo(Estado estadoActual, String simbolo){
-        for (Transicion transicionActual: this.getFuncionTransicion()){
-            if (transicionActual.getSimbolo().equals(simbolo) && transicionActual.getEstadoOrigen().equals(estadoActual)){
+        for (Transicion transicionActual : this.getFuncionTransicion()) {
+            String simb = transicionActual.getSimbolo();
+            if (simb != null && simb.equals(simbolo) 
+                    && transicionActual.getEstadoOrigen().equals(estadoActual)) {
                 return transicionActual.getEstadoDestino().getFirst();
             }
         }

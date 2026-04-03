@@ -9,7 +9,7 @@ public class Transicion {
     private String simbolo;
     private List<Estado> estadoDestino;
 
-    public Transicion(Estado estadoOrigen, String Simbolo){
+    public Transicion(Estado estadoOrigen, String simbolo){
         this.estadoOrigen = estadoOrigen;
         this.simbolo = simbolo;
     }
