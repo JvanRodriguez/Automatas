@@ -101,8 +101,16 @@ public class Simulacion implements IModel{
         return trazabilidad;
     }
 
-    //Metodo que completa la transicion con los objetos TransicionDTO
+    public List<DTOs.TransicionDTO> getTransicionesBase(){
+        List<DTOs.TransicionDTO> transicionesBase = new ArrayList<>();
+        for(Transicion tBase:this.automataDeseado.getFuncionTransicion()){
+            DTOs.TransicionDTO aux = tBase.toDTOBase();
+            transicionesBase.add(aux);
+        }
+        return transicionesBase;
+    }
 
+    //Metodo que completa la transicion con los objetos TransicionDTO
     public void completarTransicion(DTOs.TransicionDTO dtoLleno) {
         // Busca transicion incompleta original
         Transicion transicionOriginal = buscarTransicion(dtoLleno.origen(), dtoLleno.simbolo());

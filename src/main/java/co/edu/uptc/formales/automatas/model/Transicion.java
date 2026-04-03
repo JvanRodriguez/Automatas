@@ -21,6 +21,10 @@ public class Transicion {
         return new DTOs.TransicionDTO(this.estadoOrigen.getNombre(), this.simbolo, nombreDestinos);
     }
 
+    public DTOs.TransicionDTO toDTOBase() {
+        return new DTOs.TransicionDTO(this.estadoOrigen.getNombre(), this.simbolo);
+    }
+
     public List<Estado> getEstadoDestino() {
         return estadoDestino;
     }

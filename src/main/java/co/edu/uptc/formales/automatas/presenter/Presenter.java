@@ -1,9 +1,13 @@
 package co.edu.uptc.formales.automatas.presenter;
 
+import co.edu.uptc.formales.automatas.DTO.DTOs;
 import co.edu.uptc.formales.automatas.model.Simulacion;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class Presenter implements IPresenter{
-    
+
     private Simulacion simulacion;
 
     @Override
@@ -38,8 +42,46 @@ public class Presenter implements IPresenter{
 
     @Override
     public void crearFuncionTransicion() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'crearFuncionTransicion'");
+        //pedirle a la vista que muestre y llene las transicionesDTO incompletas
+        for(DTOs.TransicionDTO tBase: simulacion.getTransicionesBase()){
+            String estado = tBase.origen();
+            String simbolo = tBase.simbolo();
+            //El metodo en vista debe retornar una TransicionDTO completa!
+            /*
+                En vista usa el constructor DTOs.TransicionDTO completo
+                DTOs.TransicionDTO aux = new DTOs.TransicionDTO(nombreEstadoOigen: String, simboloDeTransicion: String, estadosDestino: List<String>)
+            */
+            DTOs.TransicionDTO aux = view.getTransicion(estado,simbolo);
+            simulacion.completarTransicion(aux);
+
+        }
+
+    }
+    
+    public void crearFuncionTransicion() {
+        //obtener estados de transiciones base como strings para la vista
+        List<String> estados = simulacion.getTransicionesBase().stream().
+                map(DTOs.TransicionDTO::origen).
+                collect(Collectors.toList());
+        //obtener simbolos de transiciones base como strings para la vista
+        List<String> simbolos = simulacion.getTransicionesBase().stream().
+                map(DTOs.TransicionDTO::simbolo).
+                collect(Collectors.toList());
+        for(DTOs.TransicionDTO tBase: simulacion.getTransicionesBase()){
+            String estado = tBase.origen();
+            String simbolo = tBase.simbolo();
+            //El metodo en vista debe retornar una TransicionDTO completa!
+            /*
+                En vista usa el constructor DTOs.TransicionDTO completo
+                DTOs.TransicionDTO aux = new DTOs.TransicionDTO(nombreEstadoOigen: String, simboloDeTransicion: String, estadosDestino: List<String>)
+            */
+            List<DTOs.TransicionDTO> aux = view.getTransiciones(estados,simbolos);
+            for(DTOs.TransicionDTO transicion: aux){
+                simulacion.completarTransicion(transicion);
+            }
+
+        }
+
     }
 
     @Override
