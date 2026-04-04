@@ -52,7 +52,7 @@ public class View extends JFrame implements IView {
 
     @Override
     public void mostrarCrearAutomata() {
-        crearAutomata = new CrearAutomata();
+        crearAutomata = new CrearAutomata(this.actionListener);
         cambiarPanel(crearAutomata);
     }
 
