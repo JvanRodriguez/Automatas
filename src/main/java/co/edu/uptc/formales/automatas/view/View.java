@@ -3,6 +3,9 @@ package co.edu.uptc.formales.automatas.view;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -21,6 +24,7 @@ public class View extends JFrame implements IView {
     private ActionListener actionListener;
     private JPanel contenido;
     private CrearAutomata crearAutomata;
+    private CrearTransiciones crearTransiciones;
 
     public View(ActionListener actionListener) {
         this.actionListener = actionListener;
@@ -48,6 +52,12 @@ public class View extends JFrame implements IView {
         contenido.add(nuevoPanel, BorderLayout.CENTER);
         contenido.revalidate();
         contenido.repaint();
+    }
+
+    @Override
+    public void mostrarAnadirTransicion(List<DTOs.TransicionDTO> dtoTransiciones){
+        crearTransiciones = new CrearTransiciones(dtoTransiciones, actionListener);
+        cambiarPanel(crearTransiciones);
     }
 
     @Override

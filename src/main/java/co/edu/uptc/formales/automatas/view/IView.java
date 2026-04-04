@@ -3,6 +3,7 @@ package co.edu.uptc.formales.automatas.view;
 import java.util.List;
 import java.util.Map;
 
+import co.edu.uptc.formales.automatas.DTO.DTOs;
 import co.edu.uptc.formales.automatas.DTO.DTOs.TransicionDTO;
 import co.edu.uptc.formales.automatas.model.TipoAutomata;
 
@@ -37,4 +38,6 @@ public interface IView {
     public String getRutaImportar();
 
     public void mostrarCrearAutomata();
+
+    public void mostrarAnadirTransicion(List<DTOs.TransicionDTO> dtoTransiciones);
 }

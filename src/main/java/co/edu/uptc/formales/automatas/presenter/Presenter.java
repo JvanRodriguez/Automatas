@@ -37,6 +37,10 @@ public class Presenter implements IPresenter, ActionListener{
             case "CARGAR_AUTOMATA":
                 importarAutomata();
                 break;
+            case "ANADIR_FUNCION_TRANSICION":
+                //view.mostrarAnadirTransicion();
+                crearFuncionTransicionAll();
+                break;
             default:
                 break;
         }
@@ -154,9 +158,8 @@ public class Presenter implements IPresenter, ActionListener{
             for(DTOs.TransicionDTO transicion: aux){
                 simulacion.completarTransicion(transicion);
             }
-
         }
-
+        //view.mostrarAnadirTransicion(aux);
     }
 
     @Override
