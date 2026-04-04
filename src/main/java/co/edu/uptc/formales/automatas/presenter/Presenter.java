@@ -1,5 +1,7 @@
 package co.edu.uptc.formales.automatas.presenter;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,13 +11,37 @@ import java.util.stream.Collectors;
 import co.edu.uptc.formales.automatas.DTO.DTOs;
 import co.edu.uptc.formales.automatas.model.Estado;
 import co.edu.uptc.formales.automatas.model.IModel;
+import co.edu.uptc.formales.automatas.model.Simulacion;
 import co.edu.uptc.formales.automatas.model.TipoAutomata;
 import co.edu.uptc.formales.automatas.model.TipoEstado;
 import co.edu.uptc.formales.automatas.view.IView;
+import co.edu.uptc.formales.automatas.view.View;
 
-public class Presenter implements IPresenter{
+public class Presenter implements IPresenter, ActionListener{
+    
     private IModel simulacion;
     private IView view;
+
+    public Presenter() {
+        this.simulacion = new Simulacion();
+        this.view = new View(this);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        switch(e.getActionCommand()){
+            case "CREAR_AUTOMATA":
+                view.mostrarCrearAutomata();
+                crearAutomata();
+                break;
+            case "CARGAR_AUTOMATA":
+                importarAutomata();
+                break;
+            default:
+                break;
+        }
+
+    }
 
     @Override
     public void crearAutomata() {

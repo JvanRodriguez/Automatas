@@ -35,4 +35,6 @@ public interface IView {
     public String getRutaExportar();
 
     public String getRutaImportar();
+
+    public void mostrarCrearAutomata();
 }
