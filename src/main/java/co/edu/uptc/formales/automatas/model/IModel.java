@@ -14,5 +14,7 @@ public interface IModel {
     public String obtenerTrazabilidad(String cadena);
     public List<DTOs.TransicionDTO> getTransicionesBase();
     public void completarTransicion(TransicionDTO aux);
+    public boolean exportarAutomata(String ruta);
+    public boolean importarAutomata(String ruta);
     
 }

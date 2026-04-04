@@ -3,14 +3,15 @@ package co.edu.uptc.formales.automatas.presenter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import co.edu.uptc.formales.automatas.DTO.DTOs;
 import co.edu.uptc.formales.automatas.model.Estado;
 import co.edu.uptc.formales.automatas.model.IModel;
 import co.edu.uptc.formales.automatas.model.TipoAutomata;
 import co.edu.uptc.formales.automatas.model.TipoEstado;
 import co.edu.uptc.formales.automatas.view.IView;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Presenter implements IPresenter{
     private IModel simulacion;
@@ -134,14 +135,24 @@ public class Presenter implements IPresenter{
 
     @Override
     public void exportarAutomata() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'exportarAutomata'");
+        String ruta = view.getRutaExportar();
+        boolean exito = simulacion.exportarAutomata(ruta);
+        if (exito) {
+            view.mostrarMensaje("Automata exportado exitosamente a: " + ruta, "EXIT");
+        } else {
+            view.mostrarMensaje("Error al exportar el automata. Verifique la ruta e intente nuevamente.", "ERROR");
+        }
     }
 
     @Override
     public void importarAutomata() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'importarAutomata'");
+        String ruta = view.getRutaImportar();
+        boolean exito = simulacion.importarAutomata(ruta);
+        if (exito) {
+            view.mostrarMensaje("Automata importado exitosamente desde: " + ruta, "EXIT");
+        } else {
+            view.mostrarMensaje("Error al importar el automata. Verifique la ruta e intente nuevamente.", "ERROR");
+        }
     }
 
     @Override
