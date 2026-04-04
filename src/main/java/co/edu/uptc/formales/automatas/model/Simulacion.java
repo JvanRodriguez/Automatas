@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import co.edu.uptc.formales.automatas.DTO.DTOs;
+import co.edu.uptc.formales.automatas.persistence.FileManager;
 
 public class Simulacion implements IModel{
 
     private Automata automataDeseado;
     //private HashMap<String, Boolean> map;
-
+    private FileManager fileManager;
 
     @Override
     public void crearAutomata(List<Estado> estados, List<String> alfabeto, Estado inicial, List<Estado> aceptacion, TipoAutomata tipo) {
@@ -138,5 +139,25 @@ public class Simulacion implements IModel{
                 .filter(e -> nombresDestino.stream()
                         .anyMatch(nombre -> nombre.trim().equalsIgnoreCase(e.getNombre())))
                 .toList();
+    }
+
+    @Override
+    public boolean exportarAutomata(String ruta){
+        try {
+            fileManager.exportarAutomata(automataDeseado, ruta);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+        
+    }
+    @Override
+    public boolean importarAutomata(String ruta){
+        try {
+            this.automataDeseado = fileManager.importarAutomata(ruta);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

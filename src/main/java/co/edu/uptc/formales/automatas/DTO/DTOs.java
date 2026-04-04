@@ -10,5 +10,8 @@ public class DTOs {
             this(origen, simbolo, null); // Llama al constructor de DTO completa y le pone el destino vacío
         }
     }
+
+    public record AutomataDTO(String tipo, List<String> alfabeto, String estadoInicial, List<String> estados,
+        List<String> estadosAceptacion, List<TransicionDTO> transiciones) {}
 }
 

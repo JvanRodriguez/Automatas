@@ -2,6 +2,7 @@ package co.edu.uptc.formales.automatas.view;
 
 import java.util.List;
 import java.util.Map;
+
 import co.edu.uptc.formales.automatas.DTO.DTOs.TransicionDTO;
 import co.edu.uptc.formales.automatas.model.TipoAutomata;
 
@@ -29,4 +30,9 @@ public interface IView {
 
     public List<String> getCadenaPrueba();
     
+    public void mostrarMensaje(String mensaje, String tipo);
+
+    public String getRutaExportar();
+
+    public String getRutaImportar();
 }
