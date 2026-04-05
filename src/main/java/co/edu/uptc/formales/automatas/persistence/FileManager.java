@@ -23,26 +23,19 @@ public class FileManager{
 
     private final Gson gson = new Gson();
 
-    public Automata importarAutomata(String ruta) {
-
-        try (FileReader reader = new FileReader(ruta)) {
-            DTOs.AutomataDTO dto = gson.fromJson(reader, DTOs.AutomataDTO.class);
-            return this.convertirAModelo(dto);
-        }catch (IOException e) {
-            System.out.println("Error al importar el archivo.");
-            return null;
-        }
+    public Automata importarAutomata(String ruta) throws IOException {
+        FileReader reader = new FileReader(ruta);
+        DTOs.AutomataDTO dto = gson.fromJson(reader, DTOs.AutomataDTO.class);
+        return this.convertirAModelo(dto);
     }
     
-    public void exportarAutomata(Automata automata, String ruta){
-
+    public void exportarAutomata(Automata automata, String ruta) throws IOException {
+        System.out.println("Exportando automata a: " + ruta);
         DTOs.AutomataDTO dto = this.convertirADTO(automata);
-
-        try (FileWriter writer = new FileWriter(ruta)) {
-            gson.toJson(dto, writer);
-        }catch (IOException e) {
-            System.out.println("Error al exportar el archivo.");
-        }
+        FileWriter writer = new FileWriter(ruta);
+        gson.toJson(dto, writer);
+        writer.close();
+        
     }
 
     private Automata convertirAModelo(DTOs.AutomataDTO automataDto) {

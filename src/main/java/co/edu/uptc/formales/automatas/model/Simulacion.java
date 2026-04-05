@@ -13,6 +13,10 @@ public class Simulacion implements IModel{
     //private HashMap<String, Boolean> map;
     private FileManager fileManager;
 
+    public Simulacion() {
+        this.fileManager = new FileManager();
+    }
+
     @Override
     public void crearAutomata(List<Estado> estados, List<String> alfabeto, Estado inicial, List<Estado> aceptacion, TipoAutomata tipo) {
         this.automataDeseado = new Automata(tipo, alfabeto, inicial, estados, aceptacion);
@@ -143,10 +147,14 @@ public class Simulacion implements IModel{
 
     @Override
     public boolean exportarAutomata(String ruta){
+        System.out.println("LOG: RUTA RECIBIDA EN SIMULACION: " + ruta);
         try {
+            System.out.println("LOG: AUTOMATA A EXPORTAR: " + automataDeseado.toString());
             fileManager.exportarAutomata(automataDeseado, ruta);
+            System.out.println("LOG DESPUES DE EXPORTAR1.");
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
         
