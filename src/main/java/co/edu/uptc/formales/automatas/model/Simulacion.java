@@ -160,4 +160,9 @@ public class Simulacion implements IModel{
             return false;
         }
     }
+
+    @Override
+    public Automata getAutomataDeseado() {
+        return automataDeseado;
+    }
 }

@@ -16,5 +16,5 @@ public interface IModel {
     public void completarTransicion(TransicionDTO aux);
     public boolean exportarAutomata(String ruta);
     public boolean importarAutomata(String ruta);
-    
+    public Automata getAutomataDeseado();
 }

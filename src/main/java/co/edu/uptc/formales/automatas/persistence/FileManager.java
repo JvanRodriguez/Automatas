@@ -33,6 +33,7 @@ public class FileManager{
             return null;
         }
     }
+    
     public void exportarAutomata(Automata automata, String ruta){
 
         DTOs.AutomataDTO dto = this.convertirADTO(automata);
