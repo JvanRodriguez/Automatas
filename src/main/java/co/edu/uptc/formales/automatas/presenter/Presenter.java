@@ -144,18 +144,44 @@ public class Presenter implements IPresenter{
 
     private void rellenarTransiciones() {
         List<DTOs.TransicionDTO> transicionesBase = simulacion.getTransicionesBase();
+        List<String> estadosValidos = simulacion.getAutomataDeseado().getEstados().stream()
+                .map(Estado::getNombre)
+                .collect(Collectors.toList());
         view.showMessage(" ");
         view.showMessage("          --> TRANSICIONES <--");
-        view.showMessage("Ingrese el estado destino para las siguientes transiciones:");
-        view.showMessage("--Si la transición tiene el estado destino vacío, presione ENTER--");
+        view.showMessage("Estados válidos: " + String.join(", ", estadosValidos));
         view.showMessage(" ");
         for (DTOs.TransicionDTO transicionDTO : transicionesBase) {
-            view.showMessage(transicionDTO.origen() + "-" + transicionDTO.simbolo() + "->" );
-            String estadoDestino = view.entradaString();
-            List<String> estadosParaDTO = dividirPorComas(estadoDestino);
-            DTOs.TransicionDTO transicionCompleta = new TransicionDTO(transicionDTO.origen(), transicionDTO.simbolo(), estadosParaDTO);
-            simulacion.completarTransicion(transicionCompleta);
+            List<String> estadosParaDTO = null;
+            boolean validado = false;
+            while (!validado) {
+                view.showMessageNL(transicionDTO.origen() + " -" + transicionDTO.simbolo() + "-> ");
+                String estadoDestino = view.entradaString();
+                if (estadoDestino.trim().isEmpty()) {
+                    estadosParaDTO = new ArrayList<>();
+                    validado = true;
+                } else {
+                    estadosParaDTO = dividirPorComas(estadoDestino);
+                    List<String> invalidos = estadosParaDTO.stream()
+                            .filter(e -> !estadosValidos.contains(e))
+                            .collect(Collectors.toList());
+                    if (invalidos.isEmpty()) {
+                        validado = true;
+                    } else {
+                        view.showMessage("Error: Estado(s) inválido(s): " + String.join(", ", invalidos));
+                        view.showMessage("Estados válidos: " + String.join(", ", estadosValidos));
+                    }
+                }
+            }
+            
+            simulacion.completarTransicion(new TransicionDTO(
+                transicionDTO.origen(), 
+                transicionDTO.simbolo(), 
+                estadosParaDTO
+            ));
         }
+        
+        view.showMessage("✓ Todas las transiciones han sido completadas");
     }
 
     private void showMenu() {
@@ -303,12 +329,12 @@ public class Presenter implements IPresenter{
 
     private void mostrarTransiciones(Automata automata){
         List<Transicion> transiciones = automata.getFuncionTransicion();
-        view.showMessage("TRANSICIONES");
+        view.showMessage("TRANSICIONES:");
         for (Transicion transicion : transiciones) {
             DTOs.TransicionDTO DTOshow = transicion.toDTO();
-            view.showMessage(DTOshow.origen() + " -" + DTOshow.simbolo() + "-> " + DTOshow.destino());
+            view.showMessageNL(DTOshow.origen() + " -" + DTOshow.simbolo() + "-> " + DTOshow.destino());
         }
-        view.showMessage("]");
+        view.showMessageNL("]");
     }
 
     private String estadosToString(List<Estado> estados){

@@ -7,6 +7,10 @@ public class View {
         System.out.println(message);
     }
 
+    public void showMessageNL(String message) {
+        System.out.print(message);
+    }
+
     public void showInt(int data){
         System.out.println(data);
     }
