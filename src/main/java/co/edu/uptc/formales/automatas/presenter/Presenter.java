@@ -1,16 +1,12 @@
 package co.edu.uptc.formales.automatas.presenter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import co.edu.uptc.formales.automatas.DTO.DTOs;
-import co.edu.uptc.formales.automatas.DTO.DTOs.TransicionDTO;
 import co.edu.uptc.formales.automatas.model.Automata;
 import co.edu.uptc.formales.automatas.model.Estado;
 import co.edu.uptc.formales.automatas.model.IModel;
@@ -18,13 +14,12 @@ import co.edu.uptc.formales.automatas.model.Simulacion;
 import co.edu.uptc.formales.automatas.model.TipoAutomata;
 import co.edu.uptc.formales.automatas.model.TipoEstado;
 import co.edu.uptc.formales.automatas.model.Transicion;
-import co.edu.uptc.formales.automatas.persistence.FileManager;
 import co.edu.uptc.formales.automatas.view.IView;
 import co.edu.uptc.formales.automatas.view.View;
 
 public class Presenter implements IPresenter{
-    private IModel simulacion;
-    private View view;
+    private final IModel simulacion;
+    private final IView view;
 
     public Presenter(){
         this.simulacion = new Simulacion();
@@ -45,19 +40,13 @@ public class Presenter implements IPresenter{
                     showSubmenu();
                     subOption = view.entradaInt();
                     if(subOption == 1){
-                        view.showMessage(" ");
-                        view.showMessage("          --> EXPORTAR AUTÓMATA <--");
-                        view.showMessage("Ingrese la ruta donde se guardará el archivo");
-                        simulacion.exportarAutomata(view.entradaString());
+                        exportarAutomata();
                     }else if(subOption == 2){
                         evaluarCadenasyGenerarTrazabilidad();
                     }
                 }
             }else if(option == 2){
-                view.showMessage(" ");
-                view.showMessage("          --> IMPORTAR AUTÓMATA <--");
-                view.showMessage("Ingrese la ruta del archivo JSON a importar");
-                simulacion.importarAutomata(view.entradaString());
+                importarAutomata();
                 while (importOption!=0) {
                     showMenuImportado();
                     importOption = view.entradaInt();
@@ -71,60 +60,24 @@ public class Presenter implements IPresenter{
     }
 
     private void evaluarCadenasyGenerarTrazabilidad(){
-        List<String> listaCadenas = recibirCadenas();
+        List<String> listaCadenas = view.getCadenasPruebas();
         evaluarLotes(listaCadenas);
         generarTrazabilidad(listaCadenas);
 
     }
 
     private void generarTrazabilidad(List<String> listaCadenas) {
-        view.showMessage(" ");
-        view.showMessage("          --> TRAZABILIDAD <--");
         HashMap<String, String> resultadosTrazabilidad = new HashMap<>();
         for (String string : listaCadenas) {
             String trazabildiad = simulacion.obtenerTrazabilidad(string);
             resultadosTrazabilidad.put(string, trazabildiad);
         }
-        mostrarTrazabilidad(resultadosTrazabilidad);
-    }
-
-    private void mostrarTrazabilidad(HashMap<String,String> resultadosTrazabilidad) {
-        resultadosTrazabilidad.forEach((cadena, trazabilidad) -> {
-            view.showMessage("Cadena: " + cadena + " || Recorrido: " + trazabilidad);
-        });
+        view.mostrarTrazabilidad(resultadosTrazabilidad);
     }
 
     private void evaluarLotes(List<String> listaCadenas) {
         HashMap<String, Boolean> resultadosLotes = simulacion.evaluarCadenasPrueba(listaCadenas);
-        mostrarResultadosLotes(resultadosLotes);
-    }
-
-    private void mostrarResultadosLotes(HashMap<String, Boolean> resultadosLotes) {
-        if (resultadosLotes == null || resultadosLotes.isEmpty()) {
-            view.showMessage("No hay resultados para mostrar");
-            return;
-        }
-        
-        resultadosLotes.forEach((cadena, aceptada) -> {
-            String resultado = aceptada ? "ACEPTADA" : "RECHAZADA";
-            view.showMessage("Cadena: \"" + cadena + "\" → " + resultado);
-        });
-    }
-
-    private List<String> recibirCadenas(){
-        List<String> lista = new ArrayList<>();
-        view.showMessage(" ");
-        view.showMessage("Ingrese una por una las cadenas a evaluar (o ingrese fin para terminar):");
-        while (true) {
-            String input = view.entradaString();
-            if (input.equalsIgnoreCase("fin")) {
-                break;
-            }
-            if (!input.trim().isEmpty()) {
-                lista.add(input);
-            }
-        }
-        return lista;
+        view.mostrarResultadosPrueba(resultadosLotes);
     }
 
     private void showSubmenu() {
@@ -144,44 +97,15 @@ public class Presenter implements IPresenter{
 
     private void rellenarTransiciones() {
         List<DTOs.TransicionDTO> transicionesBase = simulacion.getTransicionesBase();
-        List<String> estadosValidos = simulacion.getAutomataDeseado().getEstados().stream()
-                .map(Estado::getNombre)
-                .collect(Collectors.toList());
         view.showMessage(" ");
         view.showMessage("          --> TRANSICIONES <--");
-        view.showMessage("Estados válidos: " + String.join(", ", estadosValidos));
+        view.showMessage("Ingrese el estado destino para las siguientes transiciones:");
+        view.showMessage("--Si la transición tiene el estado destino vacío, presione ENTER--");
         view.showMessage(" ");
         for (DTOs.TransicionDTO transicionDTO : transicionesBase) {
-            List<String> estadosParaDTO = null;
-            boolean validado = false;
-            while (!validado) {
-                view.showMessageNL(transicionDTO.origen() + " -" + transicionDTO.simbolo() + "-> ");
-                String estadoDestino = view.entradaString();
-                if (estadoDestino.trim().isEmpty()) {
-                    estadosParaDTO = new ArrayList<>();
-                    validado = true;
-                } else {
-                    estadosParaDTO = dividirPorComas(estadoDestino);
-                    List<String> invalidos = estadosParaDTO.stream()
-                            .filter(e -> !estadosValidos.contains(e))
-                            .collect(Collectors.toList());
-                    if (invalidos.isEmpty()) {
-                        validado = true;
-                    } else {
-                        view.showMessage("Error: Estado(s) inválido(s): " + String.join(", ", invalidos));
-                        view.showMessage("Estados válidos: " + String.join(", ", estadosValidos));
-                    }
-                }
-            }
-            
-            simulacion.completarTransicion(new TransicionDTO(
-                transicionDTO.origen(), 
-                transicionDTO.simbolo(), 
-                estadosParaDTO
-            ));
+            DTOs.TransicionDTO transicionCompleta = view.getTransicion(transicionDTO.origen(), transicionDTO.simbolo());
+            simulacion.completarTransicion(transicionCompleta);
         }
-        
-        view.showMessage("✓ Todas las transiciones han sido completadas");
     }
 
     private void showMenu() {
@@ -194,12 +118,12 @@ public class Presenter implements IPresenter{
 
     @Override
     public void crearAutomata() {
-        List<String> alfabeto = obtenerAlfabeto();
-        List<String> estados = obtenerEstados();
-        String estadoInicialV = obtenerEstadoInicial(estados);
-        List<String> estadosAceptacionV = obtenerEstadosAceptacion(estados);
+        List<String> alfabeto = view.getAlfabeto();
+        List<String> estados = view.getEstados();
+        String estadoInicialV = view.getEstadoInicial(estados);
+        List<String> estadosAceptacionV = view.getEstadosAceptacion(estados);
         List<Estado> estadosModel = crearEstados(estados);
-        TipoAutomata tipo = obtenerTipoAutomata();
+        TipoAutomata tipo = view.getTipoAutomata();
         Estado estadoInicial = asignarEstadoInicial(estadosModel, estadoInicialV);
         List<Estado> estadosAceptacion = asignarEstadosFinales(estadosModel, estadosAceptacionV);
         simulacion.crearAutomata(estadosModel, alfabeto, estadoInicial, estadosAceptacion, tipo);
@@ -238,83 +162,6 @@ public class Presenter implements IPresenter{
         return estadosAceptacionAux;
     }
 
-    private TipoAutomata obtenerTipoAutomata() {
-        int tipoNum = 0;
-        boolean valido = false;
-        view.showMessage(" ");
-        view.showMessage("          --> TIPO DE AUTOMATA <--");
-        while (!valido) {
-            view.showMessage("Seleccione uno de los siguientes tipos de autómata:");
-            view.showMessage("1. Autómata Finito Determinista (AFD)");
-            view.showMessage("2. Autómata Finito NO Determinista (AFN)");
-            tipoNum = view.entradaInt();
-            if (tipoNum == 1) {
-                return TipoAutomata.AFD;
-            } else if (tipoNum == 2) {
-                return TipoAutomata.AFN;
-            } else {
-                view.showMessage("Selección inválida, ingrese una opción mostrada (1 o 2)");
-            }
-        }
-        return null;
-    }
-
-    private List<String> obtenerEstados() {
-        Set<String> estadosSet = new HashSet<>();
-        boolean continuar = true;
-        
-        view.showMessage(" ");
-        view.showMessage("          --> ESTADOS <--");
-        while (continuar) {
-            view.showMessage("Ingrese uno por uno el nombre de los estados (o 'fin' para terminar):");
-            String estado = view.entradaString();
-            
-            if (estado.equalsIgnoreCase("fin")) {
-                if (estadosSet.isEmpty()) {
-                    view.showMessage("Debe ingresar al menos un estado");
-                } else {
-                    continuar = false;
-                }
-            } else if (estado.trim().isEmpty()) {
-                view.showMessage("El nombre del estado no puede estar vacío");
-            } else if (!estadosSet.add(estado)) {
-                view.showMessage("El estado '" + estado + "' ya fue ingresado");
-            } else {
-                view.showMessage("Estado agregado. Estados actuales: " + estadosSet);
-            }
-        }
-        
-        return new ArrayList<>(estadosSet);
-    }
-
-    private List<String> obtenerAlfabeto() {
-        view.showMessage(" ");
-        view.showMessage("          --> ALFABETO <--");
-        Set<String> alfabetoSet = new HashSet<>();
-        boolean continuar = true;
-        
-        while (continuar) {
-            view.showMessage("Ingrese uno por uno los símbolos para el alfabeto (o 'fin' para terminar):");
-            String simbolo = view.entradaString();
-            
-            if (simbolo.equalsIgnoreCase("fin")) {
-                if (alfabetoSet.isEmpty()) {
-                    view.showMessage("Debe ingresar al menos un símbolo \n");
-                } else {
-                    continuar = false;
-                }
-            } else if (simbolo.length() != 1) {
-                view.showMessage("El símbolo debe ser un solo carácter");
-            } else if (!alfabetoSet.add(simbolo)) {
-                view.showMessage("El símbolo '" + simbolo + "' ya fue ingresado");
-            } else {
-                view.showMessage("Símbolo agregado. Alfabeto actual: " + alfabetoSet);
-            }
-        }
-        
-        return new ArrayList<>(alfabetoSet);
-    }
-
     private void mostrarAutomataCreado() {
         view.showMessage(" ");
         view.showMessage("          --> RESULTADO DE AUTOMATA <--");
@@ -329,12 +176,12 @@ public class Presenter implements IPresenter{
 
     private void mostrarTransiciones(Automata automata){
         List<Transicion> transiciones = automata.getFuncionTransicion();
-        view.showMessage("TRANSICIONES:");
+        view.showMessage("TRANSICIONES");
         for (Transicion transicion : transiciones) {
             DTOs.TransicionDTO DTOshow = transicion.toDTO();
-            view.showMessageNL(DTOshow.origen() + " -" + DTOshow.simbolo() + "-> " + DTOshow.destino());
+            view.showMessage(DTOshow.origen() + " -" + DTOshow.simbolo() + "-> " + DTOshow.destino());
         }
-        view.showMessageNL("]");
+        view.showMessage("]");
     }
 
     private String estadosToString(List<Estado> estados){
@@ -345,75 +192,6 @@ public class Presenter implements IPresenter{
 
     private String toString(List<String> lista){
         return String.join(", ", lista);
-    }
-
-    public List<String> dividirPorComas(String texto) {
-        if (texto == null || texto.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return Arrays.stream(texto.split(","))
-                    .map(String::trim)
-                    .collect(Collectors.toList());
-    }
-
-    public String obtenerEstadoInicial(List<String> estados) {
-        String estadosString = String.join(", ", estados);
-        String estadoInicial = "";
-        boolean valido = false;
-        
-        view.showMessage(" ");
-        view.showMessage("          --> ESTADO INICIAL <--");
-        while (!valido) {
-            view.showMessage("Ingrese uno de los siguientes estados como estado inicial: " + estadosString);
-            estadoInicial = view.entradaString();
-            
-            if (estados.contains(estadoInicial)) {
-                valido = true;
-            } else {
-                view.showMessage("Estado inválido, ingrese uno de los estados mostrados");
-            }
-        }
-        return estadoInicial;
-    }
-
-    public List<String> obtenerEstadosAceptacion(List<String> estados) {
-        String estadosString = String.join(", ", estados);
-        List<String> aceptacion = new ArrayList<>();
-        boolean valido = false;
-        
-        view.showMessage(" ");
-        view.showMessage("          --> ESTADO(S) DE ACEPTACIÓN <--");
-        while (!valido) {
-            view.showMessage("Ingrese los estados de aceptación separados por comas\n" +
-                            "Estados disponibles: " + estadosString);
-            String input = view.entradaString();
-            
-            String[] partes = input.split(",");
-            List<String> temp = new ArrayList<>();
-            boolean todosValidos = true;
-            
-            for (String parte : partes) {
-                String estado = parte.trim();
-                if (estados.contains(estado)) {
-                    if (!temp.contains(estado)) {
-                        temp.add(estado);
-                    }
-                } else {
-                    view.showMessage("Estado inválido: " + estado);
-                    todosValidos = false;
-                    break;
-                }
-            }
-            
-            if (todosValidos && !temp.isEmpty()) {
-                aceptacion = temp;
-                valido = true;
-            } else if (temp.isEmpty()) {
-                view.showMessage("Debe ingresar al menos un estado de aceptación");
-            }
-        }
-        
-        return aceptacion;
     }
 
     //El metodo pide uno por uno los destinos de las transiciones
@@ -437,6 +215,7 @@ public class Presenter implements IPresenter{
     }
 
     //El metodo pide los destinos de las transiciones de una sola vez
+    @Override
     public void crearFuncionTransicionAll() {
         //obtener estados de transiciones base como strings para la vista
         List<String> estados = simulacion.getTransicionesBase().stream().
@@ -446,27 +225,16 @@ public class Presenter implements IPresenter{
         List<String> simbolos = simulacion.getTransicionesBase().stream().
                 map(DTOs.TransicionDTO::simbolo).
                 collect(Collectors.toList());
-        for(DTOs.TransicionDTO tBase: simulacion.getTransicionesBase()){
-            String estado = tBase.origen();
-            String simbolo = tBase.simbolo();
-            //El metodo en vista debe retornar una TransicionDTO completa!
-            /*
-                En vista usa el constructor DTOs.TransicionDTO completo
-                DTOs.TransicionDTO aux = new DTOs.TransicionDTO(nombreEstadoOigen: String, simboloDeTransicion: String, estadosDestino: List<String>)
-            */
-           // se asume que getTransiciones muestra y retorna a todas las transiciones
-            List<DTOs.TransicionDTO> aux = view.getTransiciones(estados,simbolos);
-            for(DTOs.TransicionDTO transicion: aux){
-                simulacion.completarTransicion(transicion);
-            }
-
+        List<DTOs.TransicionDTO> aux = view.getTransiciones(estados,simbolos);
+        for (DTOs.TransicionDTO transicion : aux) {
+            simulacion.completarTransicion(transicion);
         }
 
     }
 
     @Override
     public void exportarAutomata() {
-        String ruta = view.entradaString();
+        String ruta = view.getRutaExportar();
         boolean exito = simulacion.exportarAutomata(ruta);
         if (exito) {
             view.mostrarMensaje("Automata exportado exitosamente a: " + ruta, "EXIT");

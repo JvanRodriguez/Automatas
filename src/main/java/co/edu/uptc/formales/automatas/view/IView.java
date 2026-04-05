@@ -8,17 +8,23 @@ import co.edu.uptc.formales.automatas.model.TipoAutomata;
 
 public interface IView {
 
+    public void showMessage(String message);
+
+    public String entradaString();
+
+    public int entradaInt();
+
     public void mostrarTrazabilidad(Map<String,String> resultadosTrazabilidad);
 
     public void mostrarResultadosPrueba(Map<String,Boolean> resultados);
 
     public List<String> getCadenasPruebas();
 
-    public List<String> getEstadosAceptacion();
+    public List<String> getEstadosAceptacion(List<String> estadosDisponibles);
 
     public TransicionDTO getTransicion(String estado, String simbolo);
 
-    public String getEstadoInicial();
+    public String getEstadoInicial(List<String> estadosDisponibles);
 
     public List<String> getAlfabeto();
 
