@@ -121,7 +121,8 @@ public class View implements IView {
 
     @Override
     public TransicionDTO getTransicion(String estado, String simbolo) {
-        mostrarMensaje(estado + "-" + simbolo + "->", "INFO");
+        //mostrarMensaje(estado + "-" + simbolo + "->", "INFO");
+        System.out.print(estado + " -" + simbolo + "-> ");
         String estadoDestino = entradaString();
         List<String> destinos = dividirPorComas(estadoDestino);
         return new DTOs.TransicionDTO(estado, simbolo, destinos);
