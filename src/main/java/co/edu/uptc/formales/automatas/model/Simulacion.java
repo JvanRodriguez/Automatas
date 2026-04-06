@@ -1,7 +1,9 @@
 package co.edu.uptc.formales.automatas.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import co.edu.uptc.formales.automatas.DTO.DTOs;
@@ -37,7 +39,7 @@ public class Simulacion implements IModel{
 
     @Override
     public HashMap<String, Boolean> evaluarCadenasPrueba(List<String> cadenas) {
-        HashMap<String, Boolean> resultadoEvaluacion = new HashMap<>();
+        LinkedHashMap<String, Boolean> resultadoEvaluacion = new LinkedHashMap<>();
         Estado estadoInicial = automataDeseado.getEstadoInicial();
         List<Estado> estadosAceptacion = automataDeseado.getEstadosAceptacion();
         

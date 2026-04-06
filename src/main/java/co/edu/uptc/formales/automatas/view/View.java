@@ -3,6 +3,7 @@ package co.edu.uptc.formales.automatas.view;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -40,7 +41,7 @@ public class View implements IView {
     }
 
     @Override
-    public void mostrarTrazabilidad(Map<String, String> resultadosTrazabilidad) {
+    public void mostrarTrazabilidad(LinkedHashMap<String, String> resultadosTrazabilidad) {
         mostrarMensaje(" ", "INFO");
         mostrarMensaje("          --> TRAZABILIDAD <--", "INFO");
         resultadosTrazabilidad.forEach((cadena, trazabilidad) ->
@@ -63,19 +64,31 @@ public class View implements IView {
 
     @Override
     public List<String> getCadenasPruebas() {
-        List<String> lista = new ArrayList<>();
-        mostrarMensaje(" ", "INFO");
-        mostrarMensaje("Ingrese una por una las cadenas a evaluar (o ingrese fin para terminar):", "INFO");
-        while (true) {
+        List<String> cadenas = new ArrayList<>();
+        boolean continuar = true;
+        
+        showMessage("Ingrese las cadenas a evaluar (presione ENTER sin escribir para cadena vacía)");
+        showMessage("Escriba 'fin' para terminar:");
+        
+        while (continuar) {
             String input = entradaString();
+            
             if (input.equalsIgnoreCase("fin")) {
-                break;
-            }
-            if (!input.trim().isEmpty()) {
-                lista.add(input);
+                if (cadenas.isEmpty()) {
+                    showMessage("Debe ingresar al menos una cadena");
+                } else {
+                    continuar = false;
+                }
+            } else if (input.isEmpty()) {
+                cadenas.add("");
+                showMessage("Cadena vacía agregada. Actuales: " + cadenas);
+            } else {
+                cadenas.add(input);
+                showMessage("Cadena \"" + input + "\" agregada. Actuales: " + cadenas);
             }
         }
-        return lista;
+        
+        return cadenas;
     }
 
     @Override
@@ -121,7 +134,6 @@ public class View implements IView {
 
     @Override
     public TransicionDTO getTransicion(String estado, String simbolo) {
-        //mostrarMensaje(estado + "-" + simbolo + "->", "INFO");
         System.out.print(estado + " -" + simbolo + "-> ");
         String estadoDestino = entradaString();
         List<String> destinos = dividirPorComas(estadoDestino);

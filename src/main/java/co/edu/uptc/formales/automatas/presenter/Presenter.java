@@ -1,7 +1,9 @@
 package co.edu.uptc.formales.automatas.presenter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -67,7 +69,7 @@ public class Presenter implements IPresenter{
     }
 
     private void generarTrazabilidad(List<String> listaCadenas) {
-        HashMap<String, String> resultadosTrazabilidad = new HashMap<>();
+        LinkedHashMap<String, String> resultadosTrazabilidad = new LinkedHashMap<>();
         for (String string : listaCadenas) {
             String trazabildiad = simulacion.obtenerTrazabilidad(string);
             resultadosTrazabilidad.put(string, trazabildiad);
@@ -97,6 +99,7 @@ public class Presenter implements IPresenter{
 
     private void rellenarTransiciones() {
         List<DTOs.TransicionDTO> transicionesBase = simulacion.getTransicionesBase();
+        transicionesBase.sort(Comparator.comparing(DTOs.TransicionDTO::origen));
         view.showMessage(" ");
         view.showMessage("          --> TRANSICIONES <--");
         view.showMessage("Ingrese el estado destino para las siguientes transiciones:");
@@ -267,7 +270,7 @@ public class Presenter implements IPresenter{
     @Override
     public void ObtenerTrazabilidad() {
         List<String> cadenaTrazabilidad = view.getCadenaPrueba();
-        HashMap<String, String> resultadosTrazabilidad = new HashMap<>();
+        LinkedHashMap<String, String> resultadosTrazabilidad = new LinkedHashMap<>();
         for (String string : cadenaTrazabilidad) {
             String trazabilidad = simulacion.obtenerTrazabilidad(string);
             resultadosTrazabilidad.put(string, trazabilidad);

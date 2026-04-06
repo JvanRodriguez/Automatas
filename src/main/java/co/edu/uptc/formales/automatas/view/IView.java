@@ -1,5 +1,6 @@
 package co.edu.uptc.formales.automatas.view;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public interface IView {
 
     public int entradaInt();
 
-    public void mostrarTrazabilidad(Map<String,String> resultadosTrazabilidad);
+    public void mostrarTrazabilidad(LinkedHashMap<String,String> resultadosTrazabilidad);
 
     public void mostrarResultadosPrueba(Map<String,Boolean> resultados);
 
