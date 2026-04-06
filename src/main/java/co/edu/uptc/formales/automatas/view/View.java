@@ -2,8 +2,8 @@ package co.edu.uptc.formales.automatas.view;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -15,6 +15,8 @@ import co.edu.uptc.formales.automatas.model.TipoAutomata;
 
 public class View implements IView {
     private final Scanner scanner = new Scanner(System.in);
+    private List<String> estadosDisponibles = new ArrayList<>();
+    private String estadoInicialSeleccionado = "";
 
     @Override
     public void showMessage(String message) {
@@ -110,7 +112,11 @@ public class View implements IView {
 
             for (String parte : partes) {
                 String estado = parte.trim();
-                if (estadosDisponibles.contains(estado)) {
+                if (estado.equals(this.estadoInicialSeleccionado)) {
+                    mostrarMensaje("El estado inicial (" + estado + ") no puede ser de aceptacion", "ERROR");
+                    todosValidos = false;
+                    break;
+                } else if (estadosDisponibles.contains(estado)) {
                     if (!temp.contains(estado)) {
                         temp.add(estado);
                     }
@@ -134,8 +140,29 @@ public class View implements IView {
 
     @Override
     public TransicionDTO getTransicion(String estado, String simbolo) {
-        System.out.print(estado + " -" + simbolo + "-> ");
-        String estadoDestino = entradaString();
+        String estadoDestino = "";
+        while (true) {
+            System.out.print(estado + " -" + simbolo + "-> ");
+            estadoDestino = entradaString();
+            if (estadoDestino.trim().isEmpty()) {
+                mostrarMensaje("Debe ingresar un estado valido", "ERROR");
+                continue;
+            }
+            
+            List<String> destinos = dividirPorComas(estadoDestino);
+            boolean todosValidos = true;
+            for (String destino : destinos) {
+                if (!this.estadosDisponibles.contains(destino)) {
+                    mostrarMensaje("El estado de destino '" + destino + "' no pertenece al automata", "ERROR");
+                    todosValidos = false;
+                    break;
+                }
+            }
+            
+            if (todosValidos) {
+                break;
+            }
+        }
         List<String> destinos = dividirPorComas(estadoDestino);
         return new DTOs.TransicionDTO(estado, simbolo, destinos);
     }
@@ -153,6 +180,7 @@ public class View implements IView {
             estadoInicial = entradaString();
             if (estadosDisponibles.contains(estadoInicial)) {
                 valido = true;
+                this.estadoInicialSeleccionado = estadoInicial;
             } else {
                 mostrarMensaje("Estado invalido, ingrese uno de los estados mostrados", "ERROR");
             }
@@ -164,7 +192,7 @@ public class View implements IView {
     public List<String> getAlfabeto() {
         mostrarMensaje(" ", "INFO");
         mostrarMensaje("          --> ALFABETO <--", "INFO");
-        Set<String> alfabetoSet = new HashSet<>();
+        Set<String> alfabetoSet = new LinkedHashSet<>();
         boolean continuar = true;
 
         while (continuar) {
@@ -177,8 +205,6 @@ public class View implements IView {
                 } else {
                     continuar = false;
                 }
-            } else if (simbolo.length() != 1) {
-                mostrarMensaje("El simbolo debe ser un solo caracter", "ERROR");
             } else if (!alfabetoSet.add(simbolo)) {
                 mostrarMensaje("El simbolo '" + simbolo + "' ya fue ingresado", "ERROR");
             } else {
@@ -189,6 +215,7 @@ public class View implements IView {
         return new ArrayList<>(alfabetoSet);
     }
 
+    //En caso de que quiera manejarel tipo de automata finito no determinista (AFN) o el tipo de automata finito determinista (AFD)
     @Override
     public TipoAutomata getTipoAutomata() {
         mostrarMensaje(" ", "INFO");
@@ -214,7 +241,7 @@ public class View implements IView {
 
     @Override
     public List<String> getEstados() {
-        Set<String> estadosSet = new HashSet<>();
+        Set<String> estadosSet = new LinkedHashSet<>();
         boolean continuar = true;
 
         mostrarMensaje(" ", "INFO");
@@ -238,11 +265,13 @@ public class View implements IView {
             }
         }
 
-        return new ArrayList<>(estadosSet);
+        this.estadosDisponibles = new ArrayList<>(estadosSet);
+        return this.estadosDisponibles;
     }
 
     @Override
     public List<TransicionDTO> getTransiciones(List<String> estados, List<String> simbolos) {
+        this.estadosDisponibles = new ArrayList<>(estados);
         List<TransicionDTO> transiciones = new ArrayList<>();
         for (String estado : estados) {
             for (String simbolo : simbolos) {

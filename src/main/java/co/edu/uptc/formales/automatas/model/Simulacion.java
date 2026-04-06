@@ -156,7 +156,7 @@ public class Simulacion implements IModel{
             System.out.println("LOG DESPUES DE EXPORTAR1.");
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return false;
         }
         

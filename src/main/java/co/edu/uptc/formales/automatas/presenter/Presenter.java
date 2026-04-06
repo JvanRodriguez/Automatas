@@ -109,7 +109,6 @@ public class Presenter implements IPresenter{
         view.showMessage(" ");
         view.showMessage("          --> TRANSICIONES <--");
         view.showMessage("Ingrese el estado destino para las siguientes transiciones:");
-        view.showMessage("--Si la transición tiene el estado destino vacío, presione ENTER--");
         view.showMessage(" ");
         for (DTOs.TransicionDTO transicionDTO : transicionesBase) {
             DTOs.TransicionDTO transicionCompleta = view.getTransicion(transicionDTO.origen(), transicionDTO.simbolo());
@@ -132,7 +131,7 @@ public class Presenter implements IPresenter{
         String estadoInicialV = view.getEstadoInicial(estados);
         List<String> estadosAceptacionV = view.getEstadosAceptacion(estados);
         List<Estado> estadosModel = crearEstados(estados);
-        TipoAutomata tipo = view.getTipoAutomata();
+        TipoAutomata tipo = TipoAutomata.AFD; //Por el momento solo se maneja AFD, pero se puede extender para manejar AFN;
         Estado estadoInicial = asignarEstadoInicial(estadosModel, estadoInicialV);
         List<Estado> estadosAceptacion = asignarEstadosFinales(estadosModel, estadosAceptacionV);
         simulacion.crearAutomata(estadosModel, alfabeto, estadoInicial, estadosAceptacion, tipo);
