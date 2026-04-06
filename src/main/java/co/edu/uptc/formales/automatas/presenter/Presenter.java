@@ -29,34 +29,40 @@ public class Presenter implements IPresenter{
     }
 
     public void inicioMenu(){
-        int option = -1;
-        int subOption = -1;
-        int importOption = -1;
+        String option = "";
+        String subOption = "";
+        String importOption = "";
         view.showMessage("Bienvenido a la Simulación de Automatas");
-        while (option!=0) {
+        while (!option.equals("0")) {
             showMenu();
-            option = view.entradaInt();
-            if(option == 1){
+            option = view.entradaString();
+            if(option.equals("1")){
                 crearAutomata();
-                while(subOption!=0){
+                while(!subOption.equals("0")){
                     showSubmenu();
-                    subOption = view.entradaInt();
-                    if(subOption == 1){
+                    subOption = view.entradaString();
+                    if(subOption.equals("1")){
                         exportarAutomata();
-                    }else if(subOption == 2){
+                    }else if(subOption.equals("2")){
                         evaluarCadenasyGenerarTrazabilidad();
+                    }else if(!subOption.equals("0")){
+                        view.showMessage("Opción inválida, intente nuevamente");
                     }
                 }
-            }else if(option == 2){
+            }else if(option.equals("2")){
                 importarAutomata();
-                while (importOption!=0) {
+                while (!importOption.equals("0")) {
                     showMenuImportado();
-                    importOption = view.entradaInt();
-                    if (importOption == 1) {
+                    importOption = view.entradaString();
+                    if (importOption.equals("1")) {
                         evaluarCadenasyGenerarTrazabilidad();
+                    }else if(!importOption.equals("0")){
+                        view.showMessage("Opción inválida, intente nuevamente");
                     }
                 }
-
+                importOption = "";
+            }else if(!option.equals("0")){
+                view.showMessage("Opción inválida, intente nuevamente");
             }
         }
     }
