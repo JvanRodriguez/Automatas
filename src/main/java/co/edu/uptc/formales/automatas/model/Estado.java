@@ -2,6 +2,13 @@ package co.edu.uptc.formales.automatas.model;
 
 import java.util.Objects;
 
+/**
+ * Representa un estado dentro de un autómata finito (AF).
+ * Almacena la información de un estado y proporciona los métodos para acceder a esta.
+ * Además, implementa la lógica de igualdad (`equals` y `hashCode`) basándose
+ * únicamente en el nombre del estado, lo que permite que sea fácil de buscar o
+ * comparar dentro de colecciones de Java como Sets o Maps.
+ */
 public class Estado {
     private TipoEstado tipo;
     private String nombre;

@@ -19,6 +19,16 @@ public class Simulacion implements IModel{
         this.fileManager = new FileManager();
     }
 
+    /**
+     * Crea y configura un nuevo autómata con los parámetros dados.
+     * También genera la función de transición base según los estados y el alfabeto.
+     * 
+     * @param estados Lista de estados del autómata.
+     * @param alfabeto Lista de símbolos que componen el alfabeto.
+     * @param inicial Estado inicial del autómata.
+     * @param aceptacion Lista con los estados de aceptación.
+     * @param tipo Tipo de autómata (AFD o AFN).
+     */
     @Override
     public void crearAutomata(List<Estado> estados, List<String> alfabeto, Estado inicial, List<Estado> aceptacion, TipoAutomata tipo) {
         this.automataDeseado = new Automata(tipo, alfabeto, inicial, estados, aceptacion);
@@ -37,6 +47,13 @@ public class Simulacion implements IModel{
         this.automataDeseado.setFuncionTransicion(transicionesBase);
     }
 
+    /**
+     * Evalúa una lista de cadenas de prueba en el autómata configurado
+     * y retorna un mapa con los resultados (si cada cadena fue aceptada o no).
+     * 
+     * @param cadenas Lista de cadenas (secuencia de símbolos) a evaluar.
+     * @return Un mapa que asocia la cadena con un booleano, \{@code true\} si fue aceptada por el autómata.
+     */
     @Override
     public HashMap<String, Boolean> evaluarCadenasPrueba(List<String> cadenas) {
         LinkedHashMap<String, Boolean> resultadoEvaluacion = new LinkedHashMap<>();
@@ -78,6 +95,14 @@ public class Simulacion implements IModel{
         return resultadoEvaluacion;
     }
 
+    /**
+     * Obtiene una representación en texto del recorrido (trazabilidad) del autómata
+     * al procesar una cadena determinada.
+     * 
+     * @param cadena Cadena a evaluar durante el recorrido.
+     * @return Una cadena de texto que representa los estados y transiciones ejecutados.
+     *         Si se trunca por transiciones inválidas, retorna "No válida" (o similar).
+     */
     @Override
     public String obtenerTrazabilidad(String cadena) {
         String trazabilidad = "";
@@ -151,9 +176,7 @@ public class Simulacion implements IModel{
     public boolean exportarAutomata(String ruta){
         System.out.println("LOG: RUTA RECIBIDA EN SIMULACION: " + ruta);
         try {
-            System.out.println("LOG: AUTOMATA A EXPORTAR: " + automataDeseado.toString());
             fileManager.exportarAutomata(automataDeseado, ruta);
-            System.out.println("LOG DESPUES DE EXPORTAR1.");
             return true;
         } catch (Exception e) {
             //e.printStackTrace();

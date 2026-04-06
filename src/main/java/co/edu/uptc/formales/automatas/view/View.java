@@ -18,30 +18,61 @@ public class View implements IView {
     private List<String> estadosDisponibles = new ArrayList<>();
     private String estadoInicialSeleccionado = "";
 
+    /**
+     * Imprime un mensaje por pantalla y finaliza en salto de línea.
+     * 
+     * @param message Text a imprimir.
+     */
     @Override
     public void showMessage(String message) {
         System.out.println(message);
     }
 
+    /**
+     * Imprime un mensaje por consola sin salto al final (para prompters/inputs).
+     * 
+     * @param message Text a imprimir frontal.
+     */
     public void showMessageNL(String message) {
         System.out.print(message);
     }
 
+    /**
+     * Muestra un número entero individual en pantalla.
+     * 
+     * @param data Entero a mostrar.
+     */
     public void showInt(int data){
         System.out.println(data);
     }
 
+    /**
+     * Lee un string general desde la línea de comandos usando Scanner.
+     * 
+     * @return El string tipeado.
+     */
     @Override
     public String entradaString() {
         return scanner.nextLine();
     }
 
+    /**
+     * Lee y parsa un entero escrito por el usuario en la línea de comando.
+     * 
+     * @return El int leído.
+     * @throws NumberFormatException si no se proporciona un dígito válido.
+     */
     @Override
     public int entradaInt() {
         String entrada = scanner.nextLine();
         return Integer.parseInt(entrada.trim());
     }
 
+    /**
+     * Pinta en consola, dado el listado evaluado, paso a paso el historial de cada cadena testeada.
+     * 
+     * @param resultadosTrazabilidad Mapa ordenado con las trazas y descripciones armadas en el Presentador.
+     */
     @Override
     public void mostrarTrazabilidad(LinkedHashMap<String, String> resultadosTrazabilidad) {
         mostrarMensaje(" ", "INFO");
@@ -51,6 +82,12 @@ public class View implements IView {
         );
     }
 
+    /**
+     * Muestra, para lotes masivos de cadenas evaluadas, si su diagnóstico
+     * dictaminó que la secuencia se "ACEPTA" (Boolean en true) o "RECHAZA" por el autómata.
+     * 
+     * @param resultados Map con resultados globales indicando acierto de las cadenas validadas.
+     */
     @Override
     public void mostrarResultadosPrueba(Map<String, Boolean> resultados) {
         if (resultados == null || resultados.isEmpty()) {
@@ -64,6 +101,12 @@ public class View implements IView {
         });
     }
 
+    /**
+     * Crea un bucle solicitador de N cadenas que el usuario quiera evaluar,
+     * recolectándolas hasta que el input especial "fin" es digitado.
+     * 
+     * @return Una colección List<String> englobando todos los tests ingresados.
+     */
     @Override
     public List<String> getCadenasPruebas() {
         List<String> cadenas = new ArrayList<>();
@@ -93,6 +136,13 @@ public class View implements IView {
         return cadenas;
     }
 
+    /**
+     * Interfaz recolectora que permite al usuario digitar los valores
+     * o nombres (comúnmente separados por ,) de qué nodos representarán un estado FINAL/Aceptación.
+     * 
+     * @param estadosDisponibles Nombres validados y legalmente ingresados en pasos previos.
+     * @return Lista parseada que representa tal subconjunto de aceptación.
+     */
     @Override
     public List<String> getEstadosAceptacion(List<String> estadosDisponibles) {
         String estadosString = String.join(", ", estadosDisponibles);
@@ -138,6 +188,14 @@ public class View implements IView {
         return aceptacion;
     }
 
+    /**
+     * Interroga al usuario por un único DTO transicional incompleto, previendo y consultando hacia 
+     * dónde viaja ese símbolo. Verifica sintáctica y lógicamente el/los destinos.
+     * 
+     * @param estado Estado de Origen dado en terminal.
+     * @param simbolo Carácter que activa esta transición.
+     * @return El mismo DTO transicional, ahora empaquetando también las ramas (destinos) configuradas.
+     */
     @Override
     public TransicionDTO getTransicion(String estado, String simbolo) {
         String estadoDestino = "";
@@ -167,6 +225,14 @@ public class View implements IView {
         return new DTOs.TransicionDTO(estado, simbolo, destinos);
     }
 
+    /**
+     * Permite fijar un solo nodo/estado como INITIAL del autómata, restringiendo lógicamente
+     * el conjunto aceptable a los ingresados e impidiendo la falta de consistencia 
+     * en el mapeo en caso el usuario digite mal.
+     * 
+     * @param estadosDisponibles Set de todos los estados en el programa.
+     * @return Formato tipo String de la llave estado que corresponde al Inicial.
+     */
     @Override
     public String getEstadoInicial(List<String> estadosDisponibles) {
         String estadosString = String.join(", ", estadosDisponibles);
@@ -188,6 +254,12 @@ public class View implements IView {
         return estadoInicial;
     }
 
+    /**
+     * Interroga, uno a uno, los caracteres admitibles de la gramática (Alfabeto),
+     * frenando repeticiones si el Set denota copias ingresadas. Se frena digitando 'fin'.
+     * 
+     * @return El grupo finito de símbolos validados listos para estructurar funciones transicionales.
+     */
     @Override
     public List<String> getAlfabeto() {
         mostrarMensaje(" ", "INFO");
@@ -215,6 +287,13 @@ public class View implements IView {
         return new ArrayList<>(alfabetoSet);
     }
 
+    /**
+     * Interfaz recolectora del patrón de base del Automata; determinista (AFD)
+     * o no determinista (AFN). Actualmente la simulación subyacente maneja AFD, 
+     * pero la vista es compatible y proyectable a ambos tipos de enum.
+     * 
+     * @return Instancia del Enum representativa. 
+     */
     //En caso de que quiera manejarel tipo de automata finito no determinista (AFN) o el tipo de automata finito determinista (AFD)
     @Override
     public TipoAutomata getTipoAutomata() {
@@ -239,6 +318,12 @@ public class View implements IView {
         }
     }
 
+    /**
+     * Interfaz generadora de nodos "Estado". Exige nombres unitarios
+     * al usuario hasta indicar 'fin'. Resalta repeticiones para forzar nodos disjuntos.
+     * 
+     * @return List de Strings referenciados (luego parseados a objectos estado por `Presenter`).
+     */
     @Override
     public List<String> getEstados() {
         Set<String> estadosSet = new LinkedHashSet<>();
@@ -269,6 +354,15 @@ public class View implements IView {
         return this.estadosDisponibles;
     }
 
+    /**
+     * Delega y compila en una sola llamada el mapeo `estado - letra` -> `estadoDestino`
+     * que en su contraparte `getTransicion` se procesaba uno a uno. Devuelve la red transitiva 
+     * en un DTO completo para el control.
+     * 
+     * @param estados Estados disponibles predefinidos.
+     * @param simbolos El alfabeto recolectado y admisible.
+     * @return Lista completa, formateada y saneada en un pase de objetos de transferencia de transiciones.
+     */
     @Override
     public List<TransicionDTO> getTransiciones(List<String> estados, List<String> simbolos) {
         this.estadosDisponibles = new ArrayList<>(estados);
@@ -281,11 +375,23 @@ public class View implements IView {
         return transiciones;
     }
 
+    /**
+     * Re-dirige la entrada de strings unitarios de consulta para el seguimiento de la trazabilidad.
+     * 
+     * @return El grupo Listado de cadenas/entradas de Strings a ensayar.
+     */
     @Override
     public List<String> getCadenaPrueba() {
         return getCadenasPruebas();
     }
 
+    /**
+     * Muestra cualquier texto envolviéndolo con una sintaxis visual del nivel
+     * o contexto subyacente. Por ejemplo: '[INFO] Mensaje...' 
+     * 
+     * @param mensaje Cuerpop del mensaje.
+     * @param tipo El tipo log o etiqueta referencial (e.g., INFO, ERROR, etc.)
+     */
     @Override
     public void mostrarMensaje(String mensaje, String tipo) {
         if (tipo == null || tipo.isBlank() || "INFO".equalsIgnoreCase(tipo)) {
@@ -295,6 +401,12 @@ public class View implements IView {
         System.out.println("[" + tipo + "] " + mensaje);
     }
 
+    /**
+     * Interfaz específica que recoge al vuelo la ruta de texto absoluta
+     * que enlazará al escritor de serialización JSON.
+     * 
+     * @return Path de guardado JSON.
+     */
     @Override
     public String getRutaExportar() {
         mostrarMensaje(" ", "INFO");
@@ -303,6 +415,12 @@ public class View implements IView {
         return entradaString();
     }
 
+    /**
+     * Interfaz específica que recoge al vuelo la ruta de entrada para una
+     * lectura remota que levantará al Autómata usando `FileManager.java`.
+     * 
+     * @return Path objetivo origen a importar.
+     */
     @Override
     public String getRutaImportar() {
         mostrarMensaje(" ", "INFO");
@@ -311,6 +429,13 @@ public class View implements IView {
         return entradaString();
     }
 
+    /**
+     * Utilidad de formateo puro. Separa un listado crudo de comas y quita  
+     * el espacio (trim) a cada una y filtra iteraciones nulas.
+     * 
+     * @param texto Input crudo desde Scanner.
+     * @return Una lista arreglada y en limpios de nombres de estado.
+     */
     private List<String> dividirPorComas(String texto) {
         if (texto == null || texto.isEmpty()) {
             return new ArrayList<>();

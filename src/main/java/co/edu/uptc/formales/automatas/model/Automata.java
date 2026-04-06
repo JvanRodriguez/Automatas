@@ -67,6 +67,14 @@ public class Automata {
         this.tipo = tipo;
     }
 
+    /**
+     * Valida hacia qué estados se puede transitar partiendo de una lista de estados actuales
+     * y consumiendo un símbolo específico del alfabeto. (Para AFN)
+     * 
+     * @param estadosActuales Lista de estados en los que se encuentra el autómata actualmente.
+     * @param simbolo Símbolo a consumir.
+     * @return Lista de nuevos estados alcanzados tras la transición.
+     */
     public List<Estado> validarSimbolo(List<Estado> estadosActuales, String simbolo) {
         List<Estado> nuevosEstados = new ArrayList<>();
         for (Estado estadoActual : estadosActuales) {
@@ -81,6 +89,14 @@ public class Automata {
         return nuevosEstados;
     }
 
+    /*
+     * Valida hacia qué estado se puede transitar partiendo de un estado actual
+     * y consumiendo un símbolo específico del alfabeto. (Para AFD)
+     * 
+     * @param estadoActual Estado en el que se encuentra el autómata actualmente.
+     * @param simbolo Símbolo a consumir.
+     * @return Nuevo estado alcanzado tras la transición, o null si no hay transición válida.
+     */
     public Estado validarSimbolo(Estado estadoActual, String simbolo){
         for (Transicion transicionActual : this.getFuncionTransicion()) {
             String simb = transicionActual.getSimbolo();

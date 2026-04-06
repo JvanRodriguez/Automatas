@@ -19,16 +19,38 @@ import co.edu.uptc.formales.automatas.model.TipoAutomata;
 import co.edu.uptc.formales.automatas.model.TipoEstado;
 import co.edu.uptc.formales.automatas.model.Transicion;
 
+/**
+ * Gestor de archivos para la persistencia de autómatas.
+ * Permite importar y exportar la definición de los autómatas en formato JSON,
+ * encargándose de la serialización y deserialización a través de la librería Gson,
+ * además de realizar conversiones entre los DTOs y el modelo de dominio.
+ */
 public class FileManager{
 
     private final Gson gson = new Gson();
 
+    /**
+     * Importa un autómata desde un archivo JSON.
+     * 
+     * @param ruta La ruta del archivo desde donde se cargará el autómata.
+     * @return El objeto Automata convertido a partir de los datos leídos.
+     * @throws IOException Si ocurre un error de lectura durante la importación.
+     */
     public Automata importarAutomata(String ruta) throws IOException {
-        FileReader reader = new FileReader(ruta);
-        DTOs.AutomataDTO dto = gson.fromJson(reader, DTOs.AutomataDTO.class);
-        return this.convertirAModelo(dto);
+        try (FileReader reader = new FileReader(ruta)) {
+            DTOs.AutomataDTO dto = gson.fromJson(reader, DTOs.AutomataDTO.class);
+            return this.convertirAModelo(dto);
+        }
     }
     
+    /**
+     * Exporta un autómata y lo guarda como un archivo JSON.
+     * 
+     * @param automata El autómata a exportar.
+     * @param ruta La ruta o directorio destino donde se guardará el autómata. Si es
+     *             un directorio, se creará un archivo automático llamado "automata.json".
+     * @throws IOException Si ocurre un error de escritura durante la exportación.
+     */
     public void exportarAutomata(Automata automata, String ruta) throws IOException {
         ruta = ruta.endsWith(".json") ? ruta : ruta + "\\automata.json";
         System.out.println("Exportando automata a: " + ruta);
@@ -39,6 +61,14 @@ public class FileManager{
         
     }
 
+    /**
+     * Convierte un objeto de transferencia de datos (AutomataDTO) en un objeto
+     * de dominio representativo de un autómata. Inicializa estados, alfabetos
+     * y las listas de transiciones completas basándose en los datos del DTO.
+     * 
+     * @param automataDto El autómata proveniente de su forma de DTO.
+     * @return El autómata real reconstruido.
+     */
     private Automata convertirAModelo(DTOs.AutomataDTO automataDto) {
         Map<String, Estado> mapaEstados = new HashMap<>();
 
@@ -84,6 +114,13 @@ public class FileManager{
         
     }
 
+    /**
+     * Convierte un modelo de autómata al formato DTO para que sea persistido 
+     * de forma simple y en texto por Gson.
+     * 
+     * @param automata El autómata a ser convertido.
+     * @return El AutomataDTO con la versión serializada.
+     */
     private DTOs.AutomataDTO convertirADTO(Automata automata) {
         List<String> estados = automata.getEstados()
             .stream()
