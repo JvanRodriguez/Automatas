@@ -30,11 +30,12 @@ public class FileManager{
     }
     
     public void exportarAutomata(Automata automata, String ruta) throws IOException {
+        ruta = ruta.endsWith(".json") ? ruta : ruta + "\\automata.json";
         System.out.println("Exportando automata a: " + ruta);
         DTOs.AutomataDTO dto = this.convertirADTO(automata);
-        FileWriter writer = new FileWriter(ruta);
-        gson.toJson(dto, writer);
-        writer.close();
+        try (FileWriter writer = new FileWriter(ruta)) {
+            gson.toJson(dto, writer);
+        }
         
     }
 
