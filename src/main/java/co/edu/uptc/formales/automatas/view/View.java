@@ -279,6 +279,8 @@ public class View implements IView {
                 }
             } else if (!alfabetoSet.add(simbolo)) {
                 mostrarMensaje("El simbolo '" + simbolo + "' ya fue ingresado", "ERROR");
+            }else if(simbolo.isEmpty()) {
+                mostrarMensaje("El símbolo no puede ser vacío. Ingrese un carácter válido", "ERROR");
             } else {
                 mostrarMensaje("Simbolo agregado. Alfabeto actual: " + alfabetoSet, "INFO");
             }

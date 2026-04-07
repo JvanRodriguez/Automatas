@@ -52,6 +52,7 @@ public class Presenter implements IPresenter{
             option = view.entradaString();
             if(option.equals("1")){
                 crearAutomata();
+                subOption = "";
                 while(!subOption.equals("0")){
                     showSubmenu();
                     subOption = view.entradaString();
